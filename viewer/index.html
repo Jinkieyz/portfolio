@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Animated glTF in the browser</title>
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin: 0; height: 100%; background: #0b0d12; overflow: hidden; }
+  canvas { display: block; }
+  .ui { position: fixed; font-family: "Times New Roman", Georgia, serif; color: #eef2f8; user-select: none; }
+  #title { top: 18px; left: 22px; max-width: 46ch; }
+  #title h1 { margin: 0; font-size: 20px; font-weight: 600; }
+  #title p { margin: 4px 0 0; font-size: 13px; color: #aab4c4; line-height: 1.45; }
+  #note { bottom: 10px; left: 22px; font-size: 11px; color: #5e6880; max-width: 60ch; }
+  #err { top: 50%; left: 0; right: 0; text-align: center; color: #93a0b4; font-size: 14px; }
+</style>
+</head>
+<body>
+<div id="title" class="ui">
+  <h1>Animated glTF in the browser</h1>
+  <p>A rigged, animated asset loaded and played with Three.js and glTF. Drag to orbit, scroll to zoom.</p>
+</div>
+<div id="err" class="ui"></div>
+<div id="note" class="ui">Test asset generated with Meshy and audited with Web Preflight. Used to demonstrate the pipeline, not presented as hand-rigged animation.</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const MODEL = './mascot_walk.glb';   // animated GLB from the Meshy rigging step
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+renderer.setSize(innerWidth, innerHeight);
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0b0d12);
+
+const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 100);
+camera.position.set(2.4, 1.7, 3.4);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.target.set(0, 0.9, 0);
+
+scene.add(new THREE.HemisphereLight(0xcfe0ff, 0x20242e, 1.1));
+const key = new THREE.DirectionalLight(0xfff2dd, 2.0);
+key.position.set(3, 5, 2);
+scene.add(key);
+
+// soft studio floor
+const floor = new THREE.Mesh(
+  new THREE.CircleGeometry(6, 64),
+  new THREE.MeshStandardMaterial({ color: 0x11151d, roughness: 1 })
+);
+floor.rotation.x = -Math.PI / 2;
+scene.add(floor);
+
+const clock = new THREE.Clock();
+let mixer = null;
+
+new GLTFLoader().load(MODEL, (gltf) => {
+  const model = gltf.scene;
+  // center on the ground and scale to a consistent height
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  const s = 1.8 / (size.y || 1);
+  model.scale.setScalar(s);
+  model.position.sub(center.multiplyScalar(s));
+  model.position.y += (size.y * s) / 2;
+  scene.add(model);
+
+  if (gltf.animations && gltf.animations.length) {
+    mixer = new THREE.AnimationMixer(model);
+    mixer.clipAction(gltf.animations[0]).play();
+  }
+}, undefined, (e) => {
+  document.getElementById('err').textContent =
+    'Could not load ' + MODEL + '. Run the Meshy rigging step first so the animated GLB exists here.';
+  console.error(e);
+});
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+(function loop() {
+  requestAnimationFrame(loop);
+  if (mixer) mixer.update(clock.getDelta());
+  controls.update();
+  renderer.render(scene, camera);
+})();
+</script>
+</body>
+</html>
