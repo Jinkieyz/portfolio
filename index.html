@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nadeschda Barenje, Technical Artist</title>
+<style>
+  :root {
+    --bg: #0b0d12; --panel: #11151d; --line: rgba(255,255,255,.09);
+    --ink: #eef2f8; --dim: #9aa6b6; --accent: #7fb4ff; --glass: #bfe6ff;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Times New Roman", Georgia, serif; line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--glass); text-decoration: none; border-bottom: 1px solid rgba(191,230,255,.3); }
+  a:hover { border-bottom-color: var(--glass); }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+  code, .mono { font-family: "DejaVu Sans Mono", ui-monospace, monospace; font-size: .92em; }
+
+  header { padding: 90px 0 48px; border-bottom: 1px solid var(--line); }
+  header h1 { margin: 0; font-size: 40px; font-weight: 600; letter-spacing: .3px; }
+  header .role { margin: 10px 0 0; font-size: 18px; color: var(--accent); }
+  header p { margin: 20px 0 0; font-size: 17px; color: var(--dim); max-width: 60ch; }
+  .links { margin-top: 24px; font-size: 15px; color: var(--dim); }
+  .links a { margin-right: 18px; }
+
+  section { padding: 44px 0; border-bottom: 1px solid var(--line); }
+  h2 { font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: var(--dim); font-weight: 600; margin: 0 0 24px; }
+  .work h3 { margin: 0 0 6px; font-size: 23px; font-weight: 600; }
+  .work .kind { font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); }
+  .work p { margin: 10px 0 0; color: #cdd5e1; max-width: 64ch; }
+  .work .meta { margin-top: 12px; font-size: 14px; color: var(--dim); }
+  .work + .work { margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--line); }
+
+  .frame {
+    margin-top: 18px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+    background: #05070b;
+  }
+  .frame iframe { display: block; width: 100%; height: 420px; border: 0; }
+  .frame .cap { padding: 8px 12px; font-size: 13px; color: var(--dim); border-top: 1px solid var(--line); }
+
+  ul.plain { margin: 0; padding: 0; list-style: none; }
+  ul.plain li { padding: 14px 0; border-top: 1px solid var(--line); }
+  ul.plain li:first-child { border-top: 0; }
+  ul.plain b { font-weight: 600; }
+  ul.plain span { color: var(--dim); }
+
+  footer { padding: 40px 0 80px; color: var(--dim); font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Nadeschda Barenje</h1>
+  <p class="role">Technical Artist: tools, pipeline and procedural systems</p>
+  <p>I build the bridge between artists and engineers, the tools, pipelines and
+     generative systems that turn an idea into something shippable. My background is
+     glass and material practice, which trained the eye; Python, Blender and real-time
+     3D on the web are where I put it to work.</p>
+  <p class="links">
+    <a href="https://github.com/Jinkieyz">github.com/Jinkieyz</a>
+    <a href="https://vetroal.se">vetroal.se</a>
+  </p>
+</header>
+
+<section>
+  <h2>Selected work</h2>
+
+  <div class="work">
+    <div class="kind">Real-time shader, GLSL and Three.js</div>
+    <h3>Glass optics in the browser</h3>
+    <p>A cast glass form raymarched in real time, with refraction, chromatic dispersion,
+       Fresnel and Beer-Lambert absorption written by hand in the fragment shader. A
+       resolution scale keeps it within frame budget on modest hardware. Glass is my own
+       material, so the optics are grounded rather than borrowed.</p>
+    <div class="frame">
+      <iframe src="https://jinkieyz.github.io/glass-optics-shader/" title="Glass optics shader" loading="lazy"></iframe>
+      <div class="cap">Live and interactive: drag to orbit, scroll to zoom, sliders for the optics.</div>
+    </div>
+    <p class="meta">
+      <a href="https://jinkieyz.github.io/glass-optics-shader/">Open live demo</a> &nbsp;
+      <a href="https://github.com/Jinkieyz/glass-optics-shader">Code and breakdown on GitHub</a>
+    </p>
+  </div>
+
+  <div class="work">
+    <div class="kind">Pipeline tool, Blender add-on in Python</div>
+    <h3>Web Preflight</h3>
+    <p>A pre-flight check that tells a 3D artist what a scene will actually cost in the
+       browser, before export. It estimates triangles, draw calls (one per material, the
+       way a WebGL renderer splits geometry) and texture memory against a target budget,
+       and flags the glTF pitfalls that normally surface only after loading: procedural
+       materials that will not export, non-uniform scale, missing UVs or textures. Each
+       finding names the culprit and gives a one line fix. Spec validators and asset
+       auditors do not estimate runtime cost; this does, where the artist works.</p>
+    <p class="meta">
+      <a href="https://github.com/Jinkieyz/blender-web-preflight">Code, README and headless test on GitHub</a>
+    </p>
+  </div>
+
+  <div class="work">
+    <div class="kind">Procedural and generative systems</div>
+    <h3>Generative pipelines in Python and Blender</h3>
+    <p>The longer thread in my work is making forms by rule rather than by hand, and
+       building the headless pipelines to run them at scale.</p>
+    <ul class="plain">
+      <li><b>LAJFI</b> <span>, an evolutionary simulation built on Gielis superformulas, with a web demo and public code.</span>
+          <span><a href="https://github.com/Jinkieyz">github.com/Jinkieyz</a></span></li>
+      <li><b>GEMESIS / Boolean Beings</b> <span>, an evolutionary form system in Python and Blender; a set of the generated forms was physically cast.</span></li>
+      <li><b>Diffusion with Gielis positional encoding</b> <span>, an image model and training pipeline that encodes a procedural geometry prior.</span></li>
+      <li><b>Mold generator</b> <span>, a Blender tool that builds casting molds around a mesh.</span></li>
+      <li><b>Real-time 3D on the web</b> <span>, Three.js viewers and procedural pieces running in the browser.</span>
+          <span><a href="https://vetroal.se">vetroal.se</a></span></li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>How I work</h2>
+  <p style="color:#cdd5e1; max-width:64ch;">Small, technical teams and non-standard pipelines suit me. I am comfortable
+     scripting a tool one day and tuning a shader the next, and I care about the
+     unglamorous parts, budgets, repeatable exports, things that do not break when
+     someone else uses them. I am new to game engines and learning fast; the web and
+     real-time 3D are where my hands already are.</p>
+</section>
+
+<footer>
+  <div class="wrap" style="padding:0;">
+    Nadeschda Barenje &nbsp;·&nbsp;
+    <a href="https://github.com/Jinkieyz">GitHub</a> &nbsp;·&nbsp;
+    <a href="https://vetroal.se">vetroal.se</a>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>
